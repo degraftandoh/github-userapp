@@ -5,21 +5,20 @@ import axios from 'axios';
 
 
 
-const userinfo = ref(null);
+const userdata = ref(null);
 const username = ref('');
-const mistakeessage = ref('');
+const fetchErroressage = ref('');
 
-async function getuserinfo() {
+async function getuserdata() {
   try {
     
     const answer = await axios.get(`https://api.github.com/users/${username.value}`);
-    userinfo.value = answer.info;
-    console.log(answer);
+    userdata.value = answer.data;
     
-  } catch (mistake) {
-    console.mistake(mistake);
-    mistakeessage.value = 'No results'; 
-    userinfo.value = null;
+  } catch (dataError) {
+   
+    dataErrorMessage.value = 'No results'; 
+    userdata.value = null;
   }
 }
 
@@ -35,31 +34,31 @@ function formatDate(dateString) {
     <div class="body">
     <div>
     <img class="logo" src="../assets/devfinder.svg">
-    <div class="content">
+    <div class="profileSection">
     
-    <div class="search">
-      <div class="search_text">
+    <div class="query">
+      <div class="text_query">
       <img src="../assets/Shape 2.svg">
       <input type="text" placeholder="Search GitHub Username_" v-model="username">
       </div>
-      <div class="mistake">
-      <p>{{ mistakeessage }}</p>
-      <button @click="getuserinfo">Search</button>
+      <div class="fetchError">
+      <p>{{ fetchErrorMessage }}</p>
+      <searchButton @click="getuserdata">Search</searchButton>
       </div>
     </div>
     
-    <section v-if="userinfo">
-      <img :src="userinfo.avatar_url" alt="User Avatar" class="desktop_image">
+    <userProfileSection v-if="userdata">
+      <img :src="userdata.avatar_url" alt="User Avatar" class="desktopAvatar">
     <div class="profile">
-      <div class="top_profile">
-        <img :src="userinfo.avatar_url" alt="User Avatar" class="mobile_image">
-        <div class="top_profile_text">
+      <div class="userHeader">
+        <img :src="userdata.avatar_url" alt="User Avatar" class="mobileAvatar">]
+        <div class="userHeader_text">
           <div>
-            <h2>{{ userinfo.name }}</h2>
-            <h3>{{ userinfo.login }}</h3>
+            <h2>{{ userdata.name }}</h2>
+            <h3>{{ userdata.login }}</h3>
           </div>
           <div>
-            <p>Joined {{ formatDate(userinfo.created_at) }}</p>
+            <p>Joined {{ formatDate(userdata.created_at) }}</p>
           </div>
           
           
@@ -69,56 +68,56 @@ function formatDate(dateString) {
         </div>
         
       </div>
-      <div class="background">
-        <p v-if="userinfo.background">{{ userinfo.background }}</p>
-        <p v-else>This profile has no background</p>
+      <div class="userBio">
+        <p v-if="userdata.userBio">{{ userdata.userBio }}</p>
+        <p v-else>This profile has no userBio</p>
       </div>
-      <div class="middle_profile">
+      <div class="userStats">
         <div class="repos">
           <p>Repos</p>
-          <h3>{{ userinfo.public_repos }}</h3>
+          <h3>{{ userdata.public_repos }}</h3>
         </div>
-        <div class="followers">
+        <div class="userFollowers">
           <p>Followers</p>
-          <h3>{{ userinfo.followers }}</h3>
+          <h3>{{ userdata.followers }}</h3>
         </div>
-        <div class="following">
+        <div class="userFollowing">
           <p>Following</p>
-          <h3>{{ userinfo.following }}</h3>
+          <h3>{{ userdata.following }}</h3>
         </div>
       </div>
 
       <div class="bottom_profile">
-        <div class="upper_links">
-          <div class="location">
+        <div class="contactInfo">
+          <div class="userLocation">
           <img src="../assets/003-pin.png">
-          <p v-if="userinfo.location">{{ userinfo.location }}</p>
+          <p v-if="userdata.userLocation">{{ userdata.userLocation }}</p>
           <p v-else class="unavailable">Not available</p>
         </div>
-        <div class="link">
+        <div class="userWebsite">
           <img src="../assets/002-url.png">
-          <p>{{ userinfo.blog }}</p>
-          <p v-if="userinfo.blog">{{ userinfo.blog }}</p>
+          <p>{{ userdata.blog }}</p>
+          <p v-if="userdata.blog">{{ userdata.blog }}</p>
           <p v-else class="unavailable">Not available</p>
         </div>
         </div>
         
-        <div class="bottom_links">
+        <div class="additionalLinks">
           <div class="twitter">
           <img src="../assets/004-twitter.png">
-          <p>{{ userinfo.twitter_username }}</p>
-          <p v-if="userinfo.twitter_username">{{ userinfo.twitter_username }}</p>
+          <p>{{ userdata.twitter_username }}</p>
+          <p v-if="userdata.twitter_username">{{ userdata.twitter_username }}</p>
           <p v-else class="unavailable">Not available</p>
         </div>
         <div class="github">
           <img src="../assets/001-office-building.png">
-          <p v-if="userinfo.company">{{ userinfo.company }}</p>
+          <p v-if="userdata.company">{{ userdata.company }}</p>
           <p v-else class="unavailable">Not available</p>
         </div>
         </div>
       </div>
     </div> 
-    </section> 
+    </userProfileSection> 
     </div>
     </div>
     </div>
@@ -129,7 +128,7 @@ function formatDate(dateString) {
 main{
   background: #141D2F;
 }
-.desktop_image{
+.desktopAvatar{
   display: none;
 }
 .body{
@@ -142,7 +141,7 @@ main{
   padding-right: 24px;
   padding-bottom: 80px;
 }
-.search{
+.query{
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -151,12 +150,12 @@ main{
   
   padding: 7px;
 }
-.search_text{
+.text_query{
   display: flex;
   align-items: center;
   gap: 7px;
 }
-button{
+searchButton{
   color: #FFF;
   font-family: 'Space Mono';
   font-size: 14px;
@@ -182,7 +181,7 @@ input{
 .logo{
   padding-bottom: 35px;
 }
-.mistake{
+.fetchError{
   display: flex;
   align-items: center;
   gap: 20px;
@@ -193,35 +192,35 @@ input{
   font-weight: 700;
   line-height: normal;
 }
-.content{
+.userSection{
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
-section{
+userProfileSection{
   display: flex;
   background-color: #1E2A47;
   padding: 32px 24px;
   border-radius: 15px;
   flex-direction: column;
 }
-.profile{
+.user{
   
   display: flex;
   flex-direction: column;
   gap: 23px;
   
 }
-.top_profile{
+.userHeader{
   display: flex;
   gap: 20px;
 }
-.top_profile_image{
+.userHeader_image{
   border-radius: 70px;
   width: 70px;
   height: 70px;
 }
-.top_profile_text h2{
+.userHeader_text h2{
   color: #FFF;
   font-family: 'Space Mono';
   font-size: 16px;
@@ -229,7 +228,7 @@ section{
   font-weight: 700;
   line-height: normal;
 }
-.top_profile_text p{
+.userHeader_text p{
   color: #FFF;
   font-family: 'Space Mono';
   font-size: 13px;
@@ -237,7 +236,7 @@ section{
   font-weight: 400;
   line-height: normal;
 }
-.top_profile_text h3{
+.userHeader_text h3{
   color: #0079FF;
   font-family: 'Space Mono';
   font-size: 13px;
@@ -246,10 +245,10 @@ section{
   line-height: normal;
   padding: 6px 0px;
 }
-.background{
+.userBio{
   padding-top: 10px;
 }
-.background p{
+.userBio p{
   color: #FFF;
   font-family: 'Space Mono';
   font-size: 13px;
@@ -257,7 +256,7 @@ section{
   font-weight: 400;
   line-height: 25px; 
 }
-.middle_profile{
+.userStats{
   border-radius: 10px;
   background: #141D2F;
   padding: 18px 15px;
@@ -266,7 +265,7 @@ section{
 
 }
 
-.middle_profile p{
+.userStats p{
   color: #FFF;
   text-align: center;
   font-family: 'Space Mono';
@@ -275,7 +274,7 @@ section{
   font-weight: 400;
   line-height: normal;
 }
-.middle_profile h3{
+.userStats h3{
   color: #FFF;
   text-align: center;
   font-family: 'Space Mono';
@@ -285,7 +284,7 @@ section{
   line-height: normal;
   text-transform: uppercase;
 }
-.repos, .followers, .following{
+.repos, .userFollowers, .userFollowing{
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -303,11 +302,11 @@ section{
   font-weight: 400;
   line-height: normal;
 }
-.location{
+.userLocation{
   display: flex;
   gap: 25px;
 }
-.link{
+.userWebsite{
   display: flex;
   gap: 10px;
 }
@@ -322,10 +321,10 @@ section{
 .unavailable{
   opacity: 0.5;
 }
-section{
+userProfileSection{
   display: flex;
 }
-.upper_links, .bottom_links{
+.contactInfo, .additionalLinks{
   display: flex;
   flex-direction: column;
   gap: 17px;
@@ -339,7 +338,7 @@ section{
     padding: 145px 200px;
   }
 
-  section {
+  userProfileSection {
     gap: 37px;
     padding: 48px;
     display: flex;
@@ -356,7 +355,7 @@ section{
     border-radius: 15px;
   }
 
-  .desktop_image {
+  .desktopAvatar {
     display: block;
     width: 117px;
     height: 117px;
@@ -364,10 +363,10 @@ section{
     margin-right: 32px;
   }
 
-  .mobile_image {
+  .mobileAvatar {
     display: none;
   }
-  .top_profile_text{
+  .userHeader_text{
     display: flex;
     justify-content: space-between;
     flex: 1;
@@ -377,42 +376,42 @@ section{
     justify-content: space-between;
   }
   
-  button{
+  searchButton{
     font-size: 16px;
   }
-  .search_text{
+  .text_query{
     gap: 24px;
   }
-  .search_text img{
+  .text_query img{
     padding-left: 24px;
   }
   input{
     font-size: 18px;
     font-weight: 400;
   }
-  .top_profile_text h2{
+  .userHeader_text h2{
     font-size: 26px;
     font-weight: 700;
   }
-  .top_profile_text h3{
+  .userHeader_text h3{
     font-size: 16px;
     font-weight: 400;
   }
-  .top_profile_text p{
+  .userHeader_text p{
     font-size: 15px;
     font-weight: 400;
     padding-top: 7px;
   }
-  .background p{
+  .userBio p{
     font-size: 15px;
   }
-  .middle_profile{
+  .profileStats{
     padding: 15px 32px;
   }
-  .middle_profile p{
+  .profileStats p{
     font-size: 13px;
   }
-  .middle_profile h3{
+  .profileStats h3{
     font-size: 22px;
   }
 }
